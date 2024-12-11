@@ -14,7 +14,7 @@ export function parseCurlLog(log: string): MockResponse {
   return { headers, body: body.trim() };
 }
 
-export function createFetchMock(payload: MockResponse): typeof fetch {
+export function createFetchMock(payload: MockResponse, options?:{delay?: number}): typeof fetch {
   const separator = "\n\n";
   // Split on double newlines and encode each event
   const encodedEvents = payload.body
@@ -33,7 +33,7 @@ export function createFetchMock(payload: MockResponse): typeof fetch {
         async start(controller) {
           for (const event of encodedEvents) {
             controller.enqueue(new TextEncoder().encode(event + separator));
-            await new Promise((resolve) => setTimeout(resolve, 0));
+            await new Promise((resolve) => setTimeout(resolve, options?.delay || 0));
           }
           controller.close();
         },
